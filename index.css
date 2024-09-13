@@ -1,0 +1,180 @@
+/*The stuff for the outer container*/
+body {
+    --primary_color: #49111C;
+    --bg_color: #F2F4F3;
+    --secondary_color: #0C7C59;
+    --blk: #0A0908;
+    --wht: #F2F4F3;
+    --br: 0px;
+
+    font-family: "Roboto", sans-serif;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    background-color: var(--bg_color);
+    color: var(--wht);
+    margin: 0;
+}
+.todoContainer {
+    padding: 1rem;
+    background-color: var(--primary_color);
+    border-radius: var(--br);
+    width: 94%;
+    max-width: 450px;
+}
+.todoHeader {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+.todoHeader > * {
+    margin: 0;
+}
+.todoHeader p {
+    color: #ccc;
+}
+.newInputArea {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.line {
+    display: block;
+    width: 100%;
+    height: 1px;
+    background-color: var(--wht);
+    margin-block: .5rem
+}
+
+/* Styles that effect the actual individual todos*/
+
+.todoItemContainer {
+    width: 100%;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.strike {
+    text-decoration: line-through;
+}
+.strike:hover {
+    text-decoration: none;
+}
+
+.todoItem > div {
+    display: grid;
+    grid-template-columns: 1fr min-content min-content;
+    gap: 4px;
+    max-width: 100%;
+}
+.todoItem {
+    background-color: var(--wht);
+    color: var(--blk);
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: .5rem;
+}
+.todoItem * {
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+.todoItem > div > * {
+    min-height: 44px;
+}
+
+.todoItem > div > span {
+    display: grid;
+    align-content: center;
+    width: 100%;
+    height: 100%;
+}
+.todoItem > div > span:hover {
+    text-decoration: line-through;
+}
+
+.deleteBtn,
+.editBtn,
+.confirmBtn,
+.cancelBtn {
+    width: 100%;
+    height: 44px;
+    padding: 4px 8px;
+    border: none;
+    transition: all 200ms;
+}
+.deleteBtn:hover,
+.editBtn:hover,
+.confirmBtn:hover,
+.cancelBtn:hover {
+    transform: scale(.95);
+}
+.deleteBtn, .cancelBtn {
+    background-color: #49111C;
+    color: white;
+}
+.editBtn, .confirmBtn {
+    background-color: var(--secondary_color);
+    color: var(--wht);
+}
+.inputBox > input {
+    min-height: 0px;
+    max-height: 100%;
+    padding: 4px;
+    border: solid 1px black;
+}
+.todoItem > .inputBox {
+    display: none;
+}
+.todoItem.editing > .inputBox {
+    display: grid;
+}
+.todoItem.editing > .todoBox {
+    display: none;
+}
+.todoDueDate {
+    font-size: 0.8rem;
+    color: #222;
+}
+
+/*Buttons that are not part of the list*/
+#addTodoItem, #removeCompletedBtn {
+    min-height: 36px;
+    width: 100%;
+    font-weight: 800;
+    letter-spacing: .2rem;
+    border: none;
+    background-color: var(--secondary_color);
+    color: var(--wht);
+    transition: transform 500ms;
+}
+#addTodoItem:hover, #removeCompletedBtn:hover {
+    transform: scale(0.98);
+    cursor: pointer;
+}
+
+/* Handles the adding area for new todos*/
+.inputContainer {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+input {
+    min-height: 36px;
+    border: transparent;
+    margin: none;
+    padding: 0;
+    --padding : .5rem;
+    padding-inline: var(--padding);
+    width: calc(100% - (var(--padding) * 2));
+    border-radius: var(--br);
+}
