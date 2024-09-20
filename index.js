@@ -1,10 +1,13 @@
+/*
+GLOBALS
+*/
 const todos = [
     {
         todoID: 0,
         todoName: 'Users can view todos',
         todoStatus: false,
         todoDue: null,
-        todoCategory: null
+        todoCategory: 'School Work'
     },
     {
         todoID: 1,
@@ -56,173 +59,214 @@ const todos = [
         todoCategory: null
     }
 ]
+const categories = [
+    "School Work",
+    "Work",
+    "Hobby",
+    "Other"
+]
 // Used to get the starting number that new todos should be assigned to.
 let IDcounter = todos.length
 // Handles the Todos Left:
 let todosLeftCounter = 0
 
-// Handles creating the object and adding to the Array, then sends the info to the DOM adding Function (newTodoDOM)
-function addNewTodo(name, status, due=null, category=null) {
+/*
+NEW TODOS FUNCTIONS
+*/
+// Creating new todos
+let newTodoContainer = document.querySelector('.inputContainer')
+newTodoContainer.addEventListener('click', (event) => {
+    // This event listener checks to see if the button got clicked.
+    if (event.target.id === 'addTodoItem') {
+        let dueValue = event.target.parentNode.querySelector('#todoItemDue').value
+        let inputValue = event.target.parentNode.querySelector('#todoItemInput').value
+        let categoryValue = event.target.parentNode.querySelector('#todoItemCategory').value
+
+        if (inputValue != '') {
+            createNewTodo(inputValue, dueValue, categoryValue)
+        }
+    }
+})
+newTodoContainer.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        let dueValue = event.target.parentNode.parentNode.querySelector('#todoItemDue').value
+        let inputValue = event.target.parentNode.parentNode.querySelector('#todoItemInput').value
+        let categoryValue = event.target.parentNode.parentNode.querySelector('#todoItemCategory').value
+
+        if (inputValue != '') {
+            createNewTodo(inputValue, dueValue, categoryValue)
+        }
+    }
+})
+function createNewTodo(name, due, category) {
     let newTodo = {
         todoID: IDcounter, 
         todoName: name, 
-        todoStatus: status,
-        todoDue: due,
-        todoCategory: category
+        todoStatus: false,
+        todoDue: due == "" ? null : due,
+        todoCategory: category == "" ? null : category
     }
     IDcounter += 1
+    let formArea = document.querySelector('.newInputArea')
+    formArea.reset()
     todos.push(newTodo)
-    newTodoDOM(newTodo)
+    renderDOM()
 }
 
-// Creates the Elements and adds event triggers
-function newTodoDOM(todoObject) {
-    const todoList = document.querySelector('.todoItemContainer')
-
-    // Creating the Elements
-    let todoContainer = document.createElement('div')
-
-    let todoBox = document.createElement('div')
-    let todoName = document.createElement('span')
-    let todoDeleteBtn = document.createElement('button')
-    let todoEditBtn = document.createElement('button')
-
-    let inputBox = document.createElement('div')
-    let inputArea = document.createElement('input')
-    let inputConfirm = document.createElement('button')
-    let inputCancel = document.createElement('button')
-
-    // Handling Classes for styles
-    todoContainer.classList.add('todoItem')
-    todoDeleteBtn.classList.add('deleteBtn')
-    todoEditBtn.classList.add('editBtn')
-    if (todoObject.todoStatus === true) {todoName.classList.toggle('strike')}
-    inputConfirm.classList.add('confirmBtn')
-    inputCancel.classList.add('cancelBtn')
-    todoBox.classList.add('todoBox')
-    inputBox.classList.add('inputBox')
-
-    // Glueing the Elements together
-    todoBox.appendChild(todoName)
-    todoBox.appendChild(todoDeleteBtn)
-    todoBox.appendChild(todoEditBtn)
-    todoContainer.appendChild(todoBox)
-
-    inputBox.appendChild(inputArea)
-    inputBox.appendChild(inputCancel)
-    inputBox.appendChild(inputConfirm)
-    todoContainer.appendChild(inputBox)
-
-    // Adding necessary content to them
-    todoName.innerHTML = todoObject.todoName
-    todoDeleteBtn.innerHTML = 'Delete'
-    todoEditBtn.innerHTML = 'Edit'
-    inputConfirm.innerHTML = 'Confirm'
-    inputCancel.innerHTML = 'Cancel'
-
-    //Supporting Function for Todos Left
-    function todosLeftArithmetic() {
-        let todosLeft = document.querySelector('#todosLeft')
-        if (todoName.classList.contains('strike')) {todosLeftCounter -= 1}
-        else {todosLeftCounter += 1}
-        todosLeft.innerHTML = String(todosLeftCounter)
+/*
+TODO LIST FUNCTIONS
+*/
+// Event Listener and feature functions
+let todosContainer = document.querySelector('.todoItemContainer')
+// Event listener for the todoList that finds the todoItem and sends it to the router to figure out what was clicked.
+todosContainer.addEventListener('click', event => {
+    // First, find the .todoItem container.
+    if (event.target.classList.contains('todoItem')) {
+        eventRouter(event, event.target)
     }
-
-    /* Connecting functions to the Elements */
-
-    // Function that allows for users to edit the status of a todo.
-    // Automatically changes the status within the array as well.
-    todoName.addEventListener('click', () => {
-        todoName.classList.toggle('strike')
-        todosLeftArithmetic()
-        todoObject.todoStatus = (todoObject.todoStatus===true) ? false : true
-    })
-
-    //Handles the Delete Button. Removes it from the array and DOM
-    todoDeleteBtn.addEventListener('click', () => {
-        //While the todos should have the index within their object, just to make sure I'll find their index in here.
-        let todoObjectIndex = todos.indexOf(todoObject)
-        todos.splice(todoObjectIndex, 1)
-        todoList.removeChild(todoContainer)
-        if (todoName.classList.contains('strike') === false) {
-            todoName.classList.add('strike')
-            todosLeftArithmetic()
-        }
-    })
-
-    //Handles the Edit Button
-    todoEditBtn.addEventListener('click', () => {
-        todoContainer.classList.add('editing')
-    })
-
-    // Handles the Cancel Button
-    inputCancel.addEventListener('click', () => {
-        todoContainer.classList.remove('editing')
-    })
-
-    // Handles the Confirm Button
-    inputArea.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') { 
-            let txt = inputArea.value
-            if (txt != "") {
-                todoObject.todoName = txt
-                todoName.innerHTML = txt
-                todoContainer.classList.remove('editing')
-            }
-            inputArea.value = ""
-        }
-    })
-    inputConfirm.addEventListener('click', () => {
-        let txt = inputArea.value
-        if (txt != "") {
-            todoObject.todoName = txt
-            todoName.innerHTML = txt
-            todoContainer.classList.remove('editing')
-        }
-        inputArea.value = ""
-    })
-
-    // Adds the due date if there is one
-    if (todoObject.todoDue !== null) {
-        let dueDate = document.createElement('p')
-        dueDate.classList.add('todoDueDate')
-        dueDate.innerHTML = "Due: " + todoObject.todoDue
-        todoContainer.appendChild(dueDate)
-    }
-
-    //Updates the Todos Left
-    todosLeftArithmetic()
-
-    //Appends the new todo Node to the Todo List on the DOM
-    todoList.appendChild(todoContainer)
-}
-
-//Initialize from the original todos on startup:
-todos.forEach((todo) => {newTodoDOM(todo)})
-
-// Handles creating new todos from the Form
-function handleNewTodos() {
-    let todoName = document.querySelector('#todoItemInput')
-    let todoDue = document.querySelector('#todoItemDue')
-    let dueDate = todoDue.value
-
-    if (todoName.value !== '') {
-        if (todoDue.value === '' || todoDue.value === undefined) {
-            dueDate = null
-        }
-        addNewTodo(todoName.value, false, dueDate)
-        todoDue.value = ''
-        todoName.value = ''
-    }
-}
-document.querySelector('#addTodoItem').addEventListener('click', handleNewTodos())
-document.querySelector('#todoItemInput').addEventListener('keydown', (event) => {
-    if (event.key === 'Enter') { 
-        handleNewTodos()
+    let todoItem = recursiveNodeLookup(event.target.parentNode)
+    if (todoItem != undefined) {
+        eventRouter(event, todoItem)
     }
 })
+todosContainer.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') { 
+        let inputValue = event.target.value
+        // Finds the todo object after finding the corrasponding .todoItem container
+        let todo = nodeTodoLookup(recursiveNodeLookup(event.target))
+        handleNewInput(todo, inputValue)
+    }
+})
+function recursiveNodeLookup(node, clsToLookUp = 'todoItem') {
+    // Checks if the current node is what we are looking for.
+    if (node.classList.contains(clsToLookUp)) {
+        return node
+    } else if (node === document.querySelector('body')) {
+        return undefined
+    } else {
+        return recursiveNodeLookup(node.parentNode)
+    }
+}
+function nodeTodoLookup(node) {
+    let foundTodo = todos.find((todo) => {
+        if (todo.todoID == Number(node.dataset.id)) {
+            return true
+        }
+        return false
+    })
+    return foundTodo
+}
+function eventRouter(e, foundContainerNode) {
+    // Get the todo Object so we can manipulate it later
+    let todoObject = nodeTodoLookup(foundContainerNode)
 
-// Handles removeing compelted when the remove compelted button is clicked.
+    // Checks what what clicked and then routes that info to the correct function
+    let categoryGroup = foundContainerNode.querySelector('.category-group')
+
+    let inputBox = foundContainerNode.querySelector('.inputBox')
+    let cancelBtn = inputBox.querySelector('.cancelBtn')
+    let confirmBtn = inputBox.querySelector('.confirmBtn')
+    let input = inputBox.querySelector('input').value
+
+    let todoBox = foundContainerNode.querySelector('.todoBox')
+    let todoText = todoBox.querySelector('span')
+    let deleteBtn = todoBox.querySelector('.deleteBtn')
+    let editBtn = todoBox.querySelector('.editBtn')
+
+    switch (e.target) {
+        case todoText:
+            toggleCompletion(todoObject)
+            renderDOM()
+            break;
+        case deleteBtn:
+            removeTodo(todoObject)
+            renderDOM()
+            break;
+        case editBtn:
+            // Pass to cancel Btn
+        case cancelBtn:
+            foundContainerNode.classList.toggle('editing')
+            break;
+        case confirmBtn:
+            handleNewInput(todoObject, input)
+            // DOM render is in function to prevent empty inputs rerendeing
+            break;
+        default:
+            break;
+    }
+}
+function handleNewInput(todo, inputValue) {
+    if (inputValue != "" || inputValue != undefined) {
+        todo.todoName = inputValue
+        renderDOM()
+    }
+}
+function toggleCompletion(todo) {
+    todo.todoStatus = !todo.todoStatus
+}
+function removeTodo(todo) {
+    let todoIndex = todos.indexOf(todo)
+    todos.splice(todoIndex, 1)
+}
+
+/*
+RENDERER
+*/
+// Renders (Updates) the todos into the DOM
+function renderDOM() {
+    const todoList = document.querySelector('.todoItemContainer')
+    todoList.innerHTML = ""
+    let todosLeft = 0
+
+    todos.forEach(todo => {
+
+        function createButton(txt,cls) {
+            return `<button class="${cls}">${txt}</button>`
+        }
+        function createDiv(txt,cls) {
+            return `<div class="${cls}">${txt}</div>`
+        }
+
+        // Creates the Category Div
+        categoryDIV = createDiv((
+            createButton(`${todo.todoCategory === null ? "" : todo.todoCategory}`, `${todo.todoCategory === null ? 'category hidden' : 'category'}`)
+                +createButton("Change Category", 'change')),
+            "category-group")
+
+        // Creates the Main content of the Div
+        todoBoxDiv = createDiv(
+            `<span class="${!todo.todoStatus ? '' : 'strike'}">${todo.todoName}</span>
+                ${createButton("Delete",'deleteBtn')
+                +createButton('Edit','editBtn')}`,
+            "todoBox")
+
+        // Allows a user to change the todo.todoName and todo.todoCategory of the data.
+        inputDiv = createDiv(
+            `<input>
+                ${createButton("Cancel",'cancelBtn')
+                +createButton("Confirm",'confirmBtn')}`
+            , "inputBox")
+        
+        //While I could do what I have been doing before, using the create element seems to allow me to set the dataset without it acting funky
+        todoItemContainer = document.createElement('div')
+        todoItemContainer.classList.add('todoItem')
+        todoItemContainer.dataset.id = todo.todoID
+        todoItemContainer.innerHTML = `${categoryDIV + todoBoxDiv + inputDiv}`
+
+        todoList.appendChild(todoItemContainer)
+
+        if (todo.todoStatus) {
+            todosLeft ++
+        }
+    })
+    todoList.insertAdjacentHTML("afterbegin", `<h3>Todos Left: <span id="todosLeft">${todosLeft}</span></h3>`)
+}
+renderDOM()
+
+/*
+MASS DELETION OF COMPLETED TODOS
+*/
+// Deleting completed todos
 document.querySelector('#removeCompletedBtn').addEventListener('click', () => {removeAllCompleted()})
 function removeAllCompleted() {
     //Remove from array
@@ -234,16 +278,12 @@ function removeAllCompleted() {
         }
     }
     //Remove from DOM
-    let allTodosDOM = document.querySelectorAll('.todoItem')
-    allTodosDOM.forEach((todo) => {
-        let todoName = todo.querySelector('.todoBox > span')
-        if (todoName.classList.contains('strike')) {
-            todo.remove()
-        }
-    })
+    renderDOM()
 }
 
-// Used for varius debugging
+/*
+DEBUGGING TOOLS
+*/
 function debugBtn() {
     console.log(todos)
     console.log(IDcounter)

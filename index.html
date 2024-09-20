@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="todoContainer">
@@ -18,7 +19,7 @@
         </div>
         <span class="line"></span>
         <div class="inputContainer">
-            <div class="newInputArea">
+            <form class="newInputArea">
                 <label for="todoItemInput">
                     Todo Info:
                     <input type="text" id="todoItemInput">
@@ -27,7 +28,17 @@
                     Due date?:
                     <input type="text" id="todoItemDue">
                 </label>
-            </div>
+                <label for="category">
+                    Category?:
+                    <select id="todoItemCategory">
+                        <option value="">Select Category</option>
+                        <option value="School Work">School Work</option>
+                        <option value="Work">Work</option>
+                        <option value="Hobby">Hobby</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </label>
+            </form>
             <button id="addTodoItem">ADD TODO</button>
         </div>
         <span class="line"></span>
@@ -36,6 +47,22 @@
         <div class="todoItemContainer">
             <h3>Todos Left: <span id="todosLeft"></span></h3>
 
+            <div class="todoItem">
+                <div class="category-group">
+                    <button class="category">Testing</span>
+                    <button class="category category-change">Change Category</span>
+                </div>
+                <div class="todoBox">
+                    <span>HardCoded HTML</span>
+                    <button class="deleteBtn">Delete</button>
+                    <button class="editBtn">Edit</button>
+                </div>
+                <div class="inputBox">
+                    <input>
+                    <button class="cancelBtn">Cancel</button>
+                    <button class="confirmBtn">Confirm</button>
+                </div>
+            </div>
 
         </div>
 
