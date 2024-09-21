@@ -59,11 +59,12 @@ const todos = [
         todoCategory: null
     }
 ]
-const categories = [
+let categories = [
     "School Work",
     "Work",
     "Hobby",
-    "Other"
+    "Other",
+    "Testing"
 ]
 // Used to get the starting number that new todos should be assigned to.
 let IDcounter = todos.length
@@ -85,6 +86,10 @@ newTodoContainer.addEventListener('click', (event) => {
         if (inputValue != '') {
             createNewTodo(inputValue, dueValue, categoryValue)
         }
+    }
+    if (event.target.classList.contains('modifyCategories') || event.target.parentNode.classList.contains('modifyCategories')) {
+        document.querySelector('.todoContainer').classList.toggle('hidden')
+        document.querySelector('.categoryEditContainer').classList.toggle('hidden')
     }
 })
 newTodoContainer.addEventListener('keydown', (event) => {
@@ -112,6 +117,159 @@ function createNewTodo(name, due, category) {
     todos.push(newTodo)
     renderDOM()
 }
+
+/*
+NEW CATEGORY FUNCTIONS
+*/
+// Creates the options for selection for the new todo area
+let categoryEditContainer = document.querySelector('.categoryEditContainer')
+categoryEditContainer.addEventListener('click', (event) => {
+    // This event listener checks to see if the button got clicked.
+    if (event.target.id === 'addCategory') {
+        let newCategory = event.target.parentNode.querySelector('#categoryAdd').value
+        if (newCategory != '') {
+            addCategory(newCategory)
+            categoryEditContainer.querySelector('.newCategoryForm').reset()
+        }
+    }
+    if (event.target.classList.contains('cancelBtn') && event.target.parentNode.classList.contains('twoColumns')) {
+        document.querySelector('.todoContainer').classList.toggle('hidden')
+        document.querySelector('.categoryEditContainer').classList.toggle('hidden')
+    }
+    if (event.target.classList.contains('categoryOption')) {
+        categoryRouter(event, event.target)
+    }
+    let categoryOption = recursiveNodeLookup(event.target.parentNode, 'categoryOption')
+    if (categoryOption != undefined) {
+        categoryRouter(event, categoryOption)
+    }
+})
+categoryEditContainer.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        let dueValue = event.target.parentNode.parentNode.querySelector('#todoItemDue').value
+        let inputValue = event.target.parentNode.parentNode.querySelector('#todoItemInput').value
+        let categoryValue = event.target.parentNode.parentNode.querySelector('#todoItemCategory').value
+
+        if (inputValue != '') {
+            createNewTodo(inputValue, dueValue, categoryValue)
+        }
+    }
+})
+function categoryRouter(e, option) {
+    console.log(option)
+
+    let inputBox = option.querySelector('.inputBox')
+    let cancelBtn = inputBox.querySelector('.cancelBtn')
+    let confirmBtn = inputBox.querySelector('.confirmBtn')
+    let input = inputBox.querySelector('input').value
+
+    let categoryBox = option.querySelector('.categoryBox')
+    let categoryValue = option.querySelector('span').innerHTML
+    let deleteBtn = categoryBox.querySelector('.deleteBtn')
+    let editBtn = categoryBox.querySelector('.editBtn')
+
+    switch (e.target) {
+        case deleteBtn:
+            deleteCategory(categoryValue)
+            break;
+        case editBtn:
+            // Pass to cancel Btn
+        case cancelBtn:
+            option.classList.toggle('editing')
+            break;
+        case confirmBtn:
+            if (input != '') {
+                editCategory(input, categoryValue, option.dataset.id)
+            }
+            // DOM render is in function to prevent empty inputs rerendeing
+            break;
+        default:
+            break;
+    }
+}
+function createSelectionCategorys() {
+    const selection = document.querySelector('#todoItemCategory')
+    const categoriesList = document.querySelector('.categoriesList')
+    selection.innerHTML = ''
+    categoriesList.innerHTML = ''
+    let options = [`<option value="">Select Category</option>`]
+    categories.forEach((option,i) => {
+        options.push(`<option value="${option}">${option}</option>`)
+        handleCategoryEditList(option, i)
+    })
+    options.forEach(option => {
+        selection.insertAdjacentHTML('beforeend', option)
+    })
+}
+function handleCategoryEditList(categoryName, index) {
+    const categoriesList = document.querySelector('.categoriesList')
+
+    //Auxillary Functions
+    function createButton(txt,cls) {
+        return `<button class="${cls}">${txt}</button>`
+    }
+    function createDiv(txt,cls) {
+        return `<div class="${cls}">${txt}</div>`
+    }
+
+    
+    // Creates the Main content of the Div
+    categoryBox = createDiv(
+        `<span>${categoryName}</span>
+        ${createButton("Delete",'deleteBtn')
+            +createButton('Edit','editBtn')}`,
+            "categoryBox")
+            
+    // Allows a user to change the todo.todoName and todo.todoCategory of the data.
+    categoryEditBox = createDiv(
+        `<input>
+        ${createButton("Cancel",'cancelBtn')
+            +createButton("Confirm",'confirmBtn')}`
+            , "inputBox")
+    
+    let newListItem = document.createElement('li')
+    newListItem.classList.add('categoryOption')
+    newListItem.dataset.id = index
+    newListItem.innerHTML = `${categoryBox}${categoryEditBox}`
+    categoriesList.appendChild(newListItem)
+    //let insertedHTML = `<li class='categoryOption'>${categoryBox}${categoryEditBox}</li>`              
+    //categoriesList.insertAdjacentHTML('beforeend', insertedHTML)
+}
+// Removes a category (data and DOM)
+function deleteCategory(option) {
+    let i = categories.indexOf(option)
+    if (i!=-1) {
+        categories.splice(i, 1)
+        todos.forEach(todo => {
+            if (todo.todoCategory === option) {
+                todo.todoCategory = null
+            }
+        })
+        createSelectionCategorys()
+        renderDOM()
+    }
+}
+// edits the category
+function editCategory(newCategory, oldCategory, i) {
+    categories[i] = newCategory
+    todos.forEach(todo => {
+        if (todo.todoCategory === oldCategory) {
+            todo.todoCategory = newCategory
+        }
+    })
+    createSelectionCategorys()
+    renderDOM()
+}
+// Adds a category
+function addCategory(txt) {
+    if (txt != "") {
+        categories.push(txt)
+        createSelectionCategorys()
+    }
+}
+
+// Initialize the selection Options
+createSelectionCategorys()
 
 /*
 TODO LIST FUNCTIONS
@@ -144,7 +302,7 @@ function recursiveNodeLookup(node, clsToLookUp = 'todoItem') {
     } else if (node === document.querySelector('body')) {
         return undefined
     } else {
-        return recursiveNodeLookup(node.parentNode)
+        return recursiveNodeLookup(node.parentNode, clsToLookUp)
     }
 }
 function nodeTodoLookup(node) {
@@ -214,9 +372,12 @@ RENDERER
 */
 // Renders (Updates) the todos into the DOM
 function renderDOM() {
-    const todoList = document.querySelector('.todoItemContainer')
-    todoList.innerHTML = ""
+    const todosContainer = document.querySelector('.todoItemContainer')
+    todosContainer.innerHTML = ""
     let todosLeft = 0
+
+    let todoList = `<ul class='todoItemList'></ul>`
+    todosContainer.insertAdjacentHTML("beforeend", todoList)
 
     todos.forEach(todo => {
 
@@ -248,18 +409,19 @@ function renderDOM() {
             , "inputBox")
         
         //While I could do what I have been doing before, using the create element seems to allow me to set the dataset without it acting funky
-        todoItemContainer = document.createElement('div')
+        todoItemContainer = document.createElement('li')
         todoItemContainer.classList.add('todoItem')
         todoItemContainer.dataset.id = todo.todoID
         todoItemContainer.innerHTML = `${categoryDIV + todoBoxDiv + inputDiv}`
 
-        todoList.appendChild(todoItemContainer)
+        let todoItemList = todosContainer.querySelector('.todoItemList')
+        todoItemList.appendChild(todoItemContainer)
 
         if (todo.todoStatus) {
             todosLeft ++
         }
     })
-    todoList.insertAdjacentHTML("afterbegin", `<h3>Todos Left: <span id="todosLeft">${todosLeft}</span></h3>`)
+    todosContainer.insertAdjacentHTML("afterbegin", `<h3>Todos Left: <span id="todosLeft">${todosLeft}</span></h3>`)
 }
 renderDOM()
 

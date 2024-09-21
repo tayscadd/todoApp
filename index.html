@@ -21,22 +21,25 @@
         <div class="inputContainer">
             <form class="newInputArea">
                 <label for="todoItemInput">
-                    Todo Info:
+                    <span>Todo Info:</span>
                     <input type="text" id="todoItemInput">
                 </label>
                 <label for="todoItemDue">
-                    Due date?:
+                    <span>Due date?:</span>
                     <input type="text" id="todoItemDue">
                 </label>
                 <label for="category">
-                    Category?:
-                    <select id="todoItemCategory">
-                        <option value="">Select Category</option>
-                        <option value="School Work">School Work</option>
-                        <option value="Work">Work</option>
-                        <option value="Hobby">Hobby</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <span>Category?:</span>
+                    <div class="selectionBox">
+                        <select id="todoItemCategory">
+                            <option value="">Select Category</option>
+                            <option value="School Work">School Work</option>
+                            <option value="Work">Work</option>
+                            <option value="Hobby">Hobby</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <button type="button" class="modifyCategories"><img src="./wrench.svg" alt="Modify Icon"></button>
+                    </div>
                 </label>
             </form>
             <button id="addTodoItem">ADD TODO</button>
@@ -47,22 +50,24 @@
         <div class="todoItemContainer">
             <h3>Todos Left: <span id="todosLeft"></span></h3>
 
-            <div class="todoItem">
-                <div class="category-group">
-                    <button class="category">Testing</span>
-                    <button class="category category-change">Change Category</span>
-                </div>
-                <div class="todoBox">
-                    <span>HardCoded HTML</span>
-                    <button class="deleteBtn">Delete</button>
-                    <button class="editBtn">Edit</button>
-                </div>
-                <div class="inputBox">
-                    <input>
-                    <button class="cancelBtn">Cancel</button>
-                    <button class="confirmBtn">Confirm</button>
-                </div>
-            </div>
+            <ul class="todoItemList">
+                <li class="todoItem">
+                    <div class="category-group">
+                        <button class="category">Testing</span>
+                        <button class="category category-change">Change Category</span>
+                    </div>
+                    <div class="todoBox">
+                        <span>HardCoded HTML</span>
+                        <button class="deleteBtn">Delete</button>
+                        <button class="editBtn">Edit</button>
+                    </div>
+                    <div class="inputBox">
+                        <input>
+                        <button class="cancelBtn">Cancel</button>
+                        <button class="confirmBtn">Confirm</button>
+                    </div>
+                </li>
+            </ul>
 
         </div>
 
@@ -73,6 +78,23 @@
         <span>The debug button console.logs the todos array and the current ID counter.</span>
         <button onclick="debugBtn()">DEBUG BUTTON</button>
     </div>
+    <div class="categoryEditContainer hidden">
+        <div class="twoColumns">
+            <h2>Edit Categories</h2>
+            <button class="cancelBtn">Close</button>
+        </div>
+        <span class="line"></span>
+        <ul class="categoriesList">
 
+        </ul>
+        <span class="line"></span>
+        <form class="newCategoryForm">
+            <label for="categoryAdd">
+                <span>Add New Category?:</span>
+                <input type="text" id="categoryAdd">
+            </label>
+        </form>
+        <button id="addCategory">ADD CATEGORY</button>
+    </div>
 </body>
 </html>

@@ -13,16 +13,18 @@ body {
     width: 100%;
     min-height: 100vh;
     display: grid;
-    place-items: center;
+    justify-items: center;
+    padding-top: 2vh;
     background-color: var(--bg_color);
     color: var(--wht);
     margin: 0;
 }
-.todoContainer {
+.todoContainer, .categoryEditContainer {
     padding: 1rem;
     background-color: var(--primary_color);
     border-radius: var(--br);
     width: 94%;
+    height: min-content;
     max-width: 450px;
 }
 .todoHeader {
@@ -37,9 +39,6 @@ body {
     color: #ccc;
 }
 .newInputArea {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
     margin-bottom: 8px;
 }
 .line {
@@ -58,6 +57,30 @@ select {
     padding-left: 4px;
     font-weight: 600;
 }
+.categoryEditContainer {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+}
+.categoryEditContainer h2 {
+    margin: 0;
+}
+.categoryEditContainer ul {
+    padding: 8px;
+    margin: none;
+}
+.categoryEditContainer ul li {
+    list-style: none;
+}
+.twoColumns {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 1fr min-content;
+}
+.categoryEditContainer .cancelBtn {
+    background: white;
+    color: var(--primary_color)
+}
 
 /* Styles that effect the actual individual todos*/
 
@@ -73,13 +96,23 @@ select {
     text-decoration: line-through;
 }
 
-.todoItem > div {
+.todoItemList {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    
+}
+
+.todoItem > div, .categoryOption > div {
     display: grid;
     grid-template-columns: 1fr min-content min-content;
     gap: 4px;
     max-width: 100%;
 }
-.todoItem {
+.todoItem, .categoryOption {
     background-color: var(--wht);
     color: var(--blk);
     display: flex;
@@ -87,15 +120,14 @@ select {
     gap: 0.1rem;
     padding: .5rem;
 }
-.todoItem * {
+.todoItem *, .categoryOption * {
     padding: 0;
     margin: 0;
 }
-.todoItem > div:not(.category-group) > * {
+.todoItem > div:not(.category-group) > *, .categoryOption > div > * {
     min-height: 44px;
 }
-
-.todoItem > div > span:not(.category) {
+.todoItem > div > span:not(.category), .categoryOption > div > span {
     display: grid;
     align-content: center;
     width: 100%;
@@ -133,13 +165,13 @@ select {
     padding: 4px;
     border: solid 1px black;
 }
-.todoItem > .inputBox {
+.todoItem > .inputBox, .categoryOption > .inputBox {
     display: none;
 }
-.todoItem.editing > .inputBox {
+.todoItem.editing > .inputBox, .categoryOption.editing > .inputBox {
     display: grid;
 }
-.todoItem.editing > .todoBox {
+.todoItem.editing > .todoBox, .categoryOption.editing > .categoryBox {
     display: none;
 }
 .todoDueDate {
@@ -148,7 +180,7 @@ select {
 }
 
 /*Buttons that are not part of the list*/
-#addTodoItem, #removeCompletedBtn {
+#addTodoItem, #removeCompletedBtn, #addCategory {
     min-height: 36px;
     width: 100%;
     font-weight: 800;
@@ -158,7 +190,7 @@ select {
     color: var(--wht);
     transition: transform 500ms;
 }
-#addTodoItem:hover, #removeCompletedBtn:hover {
+#addTodoItem:hover, #removeCompletedBtn:hover, #addCategory:hover {
     transform: scale(0.98);
     cursor: pointer;
 }
@@ -223,4 +255,44 @@ button, .todoBox:hover {
 }
 .hidden {
     display: none !important;
+}
+.selectionBox {
+    display: grid;
+    grid-template-columns: 1fr min-content;
+}
+.modifyCategories {
+    /*Button*/
+    width:36px;
+    height: 36px;
+    display: grid;
+    place-items: center;
+    background-color: #F0F0F0;
+    border: solid 1px #F0F0F0;
+    transition: all 200ms;
+    transform: scale(.95);
+}
+.modifyCategories:hover {
+    background-color: #F0F0F0;
+    border: solid 1px #F0F0F0;
+    transform: scale(.90);
+}
+.modifyCategories img {
+    background-color: none;
+    width: 90%;
+    height: 90%
+}
+label { 
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.categoriesList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
